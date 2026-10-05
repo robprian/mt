@@ -97,8 +97,10 @@ class TxnListenerService : NotificationListenerService() {
             )
             val id = dao.insert(entity)
 
-            // 4. Sinkronisasi opsional ke DompetKu (hanya yg terkonfirmasi).
-            if (autoConfirm && snap.autoSync && snap.apiToken.isNotEmpty()) {
+            // 4. Sinkronisasi opsional ke server (hanya yg terkonfirmasi).
+            if (autoConfirm && snap.autoSync &&
+                snap.apiToken.isNotEmpty() && snap.baseUrl.isNotEmpty()
+            ) {
                 val saved = dao.byId(id) ?: return@launch
                 val res = DompetSync.pushExpense(
                     baseUrl = snap.baseUrl,

@@ -98,7 +98,35 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             val res = DompetSync.pushExpense(snap.baseUrl, snap.apiToken, txn)
             if (res.isSuccess) {
                 dao.update(txn.copy(synced = true))
-                onDone("Terkirim ke DompetKu ✓")
+                onDone("Terkirim ke server ✓")
+            } else {
+                onDone(res.exceptionOrNull()?.message ?: "Sync gagal")
+            }
+        }
+    }
+
+    /**
+     * Simpan hasil edit (termasuk learning kategori) LALU sync dalam satu
+     * coroutine — jadi tidak ada race antara simpan vs kirim.
+     */
+    fun saveAndSync(updated: TxnEntity, originalCategory: String, onDone: (String) -> Unit) {
+        viewModelScope.launch {
+            dao.update(updated)
+            val m = updated.merchant
+            if (m != null && updated.category.isNotBlank() &&
+                updated.category != originalCategory
+            ) {
+                prefs.learnCategory(m, updated.category)
+            }
+            val snap = prefs.snapshot()
+            if (snap.apiToken.isEmpty() || snap.baseUrl.isEmpty()) {
+                onDone("Isi URL server & hubungkan dulu (lihat Pengaturan).")
+                return@launch
+            }
+            val res = DompetSync.pushExpense(snap.baseUrl, snap.apiToken, updated)
+            if (res.isSuccess) {
+                dao.update(updated.copy(synced = true))
+                onDone("Terkirim ke server ✓")
             } else {
                 onDone(res.exceptionOrNull()?.message ?: "Sync gagal")
             }

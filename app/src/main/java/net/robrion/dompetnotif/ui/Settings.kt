@@ -225,7 +225,7 @@ fun SettingsScreen(vm: AppViewModel) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text("Tentang", fontWeight = FontWeight.Bold)
                 Text(
-                    "DompetNotif v1.0.0 — pencatat transaksi otomatis.\n" +
+                    "DompetNotif v1.1.0 — pencatat transaksi otomatis.\n" +
                         "• Semua data tersimpan lokal di HP (tidak ada server pihak ketiga).\n" +
                         "• Aplikasi hanya MEMBACA notifikasi, tidak bisa mengakses " +
                         "isi aplikasi bank atau melakukan transaksi.\n" +
