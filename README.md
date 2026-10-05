@@ -7,6 +7,14 @@ tercatat sendiri lengkap dengan kategori. Tanpa buka aplikasi. Tanpa catat manua
 > *Yes, Transaksi QRIS Berhasil! — Transaksi di ALFA_1M4T_JLMAMPANGVI Rp 40.600*
 > → 1 detik kemudian sudah tercatat: **Rp 40.600 • Belanja • QRIS** ✓
 
+## Tampilan aplikasi
+
+| Dasbor | Transaksi |
+|---|---|
+| <img src="docs/screenshots/dashboard.png" width="260"> | <img src="docs/screenshots/transaksi.png" width="260"> |
+| **Dialog edit (smart kategori)** | **Pengaturan** |
+| <img src="docs/screenshots/dialog.png" width="260"> | <img src="docs/screenshots/pengaturan.png" width="260"> |
+
 ## Kenapa "smart"?
 
 | Fitur | Cara kerja |
@@ -43,7 +51,7 @@ pribadimu.
 ## Cara build (GitHub Actions — tanpa Android Studio)
 
 ```bash
-# 1. Buat repo KOSONG di https://github.com/new  (mis. robprian/mt.gthit)
+# 1. Repo sudah ada: https://github.com/robprian/mt
 # 2. Jalankan script ini:
 bash push-to-github.sh
 # 3. Buka tab Actions -> workflow "Build APK" -> download artifact
@@ -59,6 +67,11 @@ git init -b main && git add -A && git commit -m "DompetNotif v1.1" \
 
 Workflow `.github/workflows/build-apk.yml`: JDK 17 + Gradle wrapper (sudah
 termasuk di repo), `assembleDebug` tiap push ke `main`/`master`.
+
+**Download APK jadi:** buka tab
+[Releases](https://github.com/robprian/mt/releases) → download
+`dompetnotif-vX.Y.Z.apk` → install di HP. (Release dibuat otomatis setiap
+push tag `v*`, mis. `git tag v1.1.0 && git push origin v1.1.0`.)
 
 **Android Studio (alternatif):** Open folder ini → tunggu Gradle sync → Run.
 

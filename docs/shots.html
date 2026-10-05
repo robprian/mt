@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>DompetNotif — UI screenshots</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#e8ecf1;font-family:-apple-system,'Segoe UI',Roboto,sans-serif;
+       display:flex;align-items:center;justify-content:center;min-height:100vh}
+  .phone{width:390px;height:844px;background:#0b0f14;border-radius:52px;padding:14px;
+         box-shadow:0 30px 80px rgba(0,0,0,.35)}
+  .screen{width:100%;height:100%;background:#f6f8fb;border-radius:38px;overflow:hidden;
+          display:flex;flex-direction:column;position:relative}
+  .appbar{background:#1565c0;color:#fff;padding:18px 18px 14px;display:flex;
+          align-items:center;justify-content:space-between}
+  .appbar h1{font-size:20px}
+  .badge{background:#ff5252;border-radius:50%;width:26px;height:26px;display:flex;
+         align-items:center;justify-content:center;font-size:13px;font-weight:700}
+  .body{flex:1;overflow:hidden;padding:16px;display:flex;flex-direction:column;gap:12px}
+  .card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .card h3{font-size:16px;margin-bottom:6px}
+  .muted{color:#667;font-size:13px}
+  .big{font-size:30px;font-weight:800;color:#1565c0;margin-top:4px}
+  .row{display:flex;align-items:center;gap:10px}
+  .btn{background:#1565c0;color:#fff;border:none;border-radius:10px;padding:9px 14px;
+       font-size:13px;font-weight:600}
+  .btn.ghost{background:#eef2f7;color:#1565c0}
+  .btn.danger{background:#fff;color:#d32f2f;border:1px solid #f0c0c0}
+  .bottomnav{background:#fff;border-top:1px solid #e5e9ef;display:flex;
+             padding:10px 0 22px}
+  .bottomnav div{flex:1;text-align:center;font-size:11px;color:#889}
+  .bottomnav div.on{color:#1565c0;font-weight:700}
+  .bottomnav .ic{font-size:22px;display:block;margin-bottom:2px}
+  .chip{background:#eef2f7;border-radius:20px;padding:7px 14px;font-size:12px;font-weight:600}
+  .chip.on{background:#1565c0;color:#fff}
+  .txn{background:#fff;border-radius:14px;padding:12px 14px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+  .txn .amt{font-weight:800;font-size:15px}
+  .txn .m{font-size:13px;font-weight:600}
+  .txn .s{font-size:11px;color:#889}
+  .out{color:#d32f2f}.inn{color:#2e7d32}
+  .bar{height:8px;border-radius:4px;background:#e3e9f2;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;background:#1565c0;border-radius:4px}
+  .switch{width:48px;height:28px;border-radius:14px;background:#1565c0;position:relative}
+  .switch::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;
+                 background:#fff;top:3px;right:3px}
+  .field{border:1.5px solid #dfe5ec;border-radius:10px;padding:10px 12px;font-size:13px;
+         background:#fff}
+  .field label{display:block;font-size:10px;color:#889;margin-bottom:2px}
+  .overlay{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;
+           align-items:flex-end;justify-content:center}
+  .sheet{background:#fff;border-radius:24px 24px 0 0;width:100%;max-height:92%;
+         padding:20px 18px 28px;overflow:hidden}
+  .sheet h2{font-size:18px;margin-bottom:12px}
+  .homebar{width:134px;height:5px;border-radius:3px;background:#111;margin:14px auto 0;opacity:.8}
+  h2.page{font-size:22px;margin-bottom:2px}
+</style>
+</head>
+<body>
+<div class="phone"><div class="screen" id="root"></div></div>
+<script>
+const s = new URLSearchParams(location.search).get('s') || 'dashboard';
+const nav = (on) => `
+  <div class="bottomnav">
+    <div class="${on==='d'?'on':''}"><span class="ic">📊</span>Dasbor</div>
+    <div class="${on==='t'?'on':''}"><span class="ic">🧾</span>Transaksi</div>
+    <div class="${on==='p'?'on':''}"><span class="ic">⚙️</span>Pengaturan</div>
+  </div><div style="background:#fff"><div class="homebar"></div></div>`;
+const appbar = (badge) => `
+  <div class="appbar"><h1>DompetNotif</h1>${badge?'<div class="badge">1</div>':'<div style="width:26px"></div>'}</div>`;
+const screens = {
+dashboard: `
+  ${appbar(true)}
+  <div class="body">
+    <div class="card">
+      <div class="muted">Halo! 👋</div>
+      <div class="muted" style="margin-top:4px">Pengeluaran hari ini</div>
+      <div class="big">Rp 40.600</div>
+    </div>
+    <div class="card" style="border-left:5px solid #ff9800">
+      <h3>Butuh review <span class="chip on" style="margin-left:4px">1</span></h3>
+      <div class="muted">QRIS • ALFA_1M4T • Rp 40.600</div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn">Konfirmasi</button>
+        <button class="btn ghost">Abaikan</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Pengeluaran per kategori</h3>
+      <div class="muted" style="margin:8px 0 2px">🍜 Jajan — Rp 40.600</div><div class="bar"><i style="width:34%"></i></div>
+      <div class="muted" style="margin:8px 0 2px">🛒 Belanja — Rp 120.000</div><div class="bar"><i style="width:100%"></i></div>
+      <div class="muted" style="margin:8px 0 2px">🚗 Transport — Rp 25.000</div><div class="bar"><i style="width:21%"></i></div>
+    </div>
+  </div>
+  ${nav('d')}`,
+transaksi: `
+  ${appbar(false)}
+  <div class="body">
+    <h2 class="page">Transaksi</h2>
+    <div class="row">
+      <span class="chip on">Semua</span><span class="chip">Menunggu</span><span class="chip">Dikonfirmasi</span>
+    </div>
+    <div class="txn">
+      <div class="row" style="justify-content:space-between">
+        <div><div class="m">ALFA_1M4T_JLMAMPANGVI</div><div class="s">QRIS • 05 Okt 2026, 16:32</div></div>
+        <div class="amt out">-Rp 40.600</div>
+      </div>
+      <div class="s" style="margin-top:6px">🍜 Jajan • ⏳ Menunggu review</div>
+    </div>
+    <div class="txn">
+      <div class="row" style="justify-content:space-between">
+        <div><div class="m">Gaji Bulanan</div><div class="s">TRANSFER • 01 Okt 2026, 09:00</div></div>
+        <div class="amt inn">+Rp 8.500.000</div>
+      </div>
+      <div class="s" style="margin-top:6px">💼 Gaji • ✓ Dikonfirmasi</div>
+    </div>
+    <div class="txn">
+      <div class="row" style="justify-content:space-between">
+        <div><div class="m">GrabBike</div><div class="s">QRIS • 04 Okt 2026, 18:12</div></div>
+        <div class="amt out">-Rp 25.000</div>
+      </div>
+      <div class="s" style="margin-top:6px">🚗 Transport • ✓ Dikonfirmasi</div>
+    </div>
+  </div>
+  ${nav('t')}`,
+dialog: `
+  ${appbar(false)}
+  <div class="body">
+    <h2 class="page">Transaksi</h2>
+    <div class="row">
+      <span class="chip on">Semua</span><span class="chip">Menunggu</span><span class="chip">Dikonfirmasi</span>
+    </div>
+    <div class="txn">
+      <div class="row" style="justify-content:space-between">
+        <div><div class="m">ALFA_1M4T_JLMAMPANGVI</div><div class="s">QRIS • 05 Okt 2026, 16:32</div></div>
+        <div class="amt out">-Rp 40.600</div>
+      </div>
+    </div>
+  </div>
+  ${nav('t')}
+  <div class="overlay"><div class="sheet">
+    <h2>Detail transaksi</h2>
+    <div class="muted" style="margin-bottom:10px">Keyakinan parser: 95% • Status: Menunggu review</div>
+    <div class="field" style="margin-bottom:8px"><label>Merchant / penerima</label>ALFA_1M4T_JLMAMPANGVI</div>
+    <div class="field" style="margin-bottom:8px"><label>Nominal (Rp)</label>40600</div>
+    <div class="muted" style="margin:4px 0 6px;font-weight:700">Kategori (smart — koreksimu diingat)</div>
+    <div class="row" style="margin-bottom:10px">
+      <span class="chip on">🍜 Jajan</span><span class="chip">🛒 Belanja</span><span class="chip">🚗 Transport</span>
+    </div>
+    <div class="row" style="margin-bottom:6px">
+      <button class="btn" style="flex:1">Simpan</button>
+      <button class="btn" style="flex:1;background:#2e7d32">Konfirmasi</button>
+    </div>
+    <div class="row">
+      <button class="btn ghost" style="flex:1">Abaikan</button>
+      <button class="btn danger" style="flex:1">Hapus</button>
+    </div>
+  </div></div>`,
+pengaturan: `
+  ${appbar(false)}
+  <div class="body">
+    <h2 class="page">Pengaturan</h2>
+    <div class="card">
+      <h3>Aplikasi yang dipantau</h3>
+      <div class="muted">blu by BCA Digital, BRImo, DANA</div>
+      <button class="btn" style="margin-top:10px">Pilih aplikasi (3)</button>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div><h3>Konfirmasi otomatis</h3><div class="muted">Keyakinan ≥ 95% langsung dikonfirmasi.</div></div>
+        <div class="switch"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Sinkronisasi server (opsional)</h3>
+      <div class="muted">Kirim transaksi ke server money tracker pribadimu.</div>
+      <button class="btn" style="margin-top:10px">Hubungkan</button>
+    </div>
+    <div class="card">
+      <h3>Uji parser</h3>
+      <div class="muted">Tempel notifikasi untuk melihat hasil parsing.</div>
+      <button class="btn ghost" style="margin-top:10px">Buka alat uji parser</button>
+    </div>
+  </div>
+  ${nav('p')}`
+};
+document.getElementById('root').innerHTML = screens[s] || screens.dashboard;
+</script>
+</body>
+</html>
