@@ -1,17 +1,17 @@
 #!/bin/bash
 #
 # Upload DompetNotif ke GitHub untuk build APK via Actions.
-#   Repo  : https://github.com/robprian/mt.gthit
+#   Repo  : https://github.com/robprian/mt
 #   Hasil : tiap push ke main -> Actions -> artifact "dompetnotif-debug" (APK)
 #
 # Cara pakai:
-#   1. Buat repo KOSONG di https://github.com/new  (nama: mt.gthit)
+#   1. Buat repo KOSONG di https://github.com/new  (nama: mt)
 #   2. Jalankan:  bash push-to-github.sh
 #   3. Login GitHub saat diminta (browser / token).
 #
 set -euo pipefail
 
-REPO="robprian/mt.gthit"
+REPO="robprian/mt"
 cd "$(dirname "$0")"
 
 echo "== DompetNotif -> github.com/$REPO =="
