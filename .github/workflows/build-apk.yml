@@ -1,0 +1,61 @@
+# Build APK DompetNotif otomatis setiap push.
+#
+# Cara pakai:
+#   1. Buat repo GitHub baru (mis. "dompetnotif").
+#   2. Push SELURUH isi folder dompet-notif-android/ ke repo tersebut
+#      (jadi gradlew ada di root repo). Workflow ini juga tahan kalau
+#      folder-nya di-push sebagai subdirektori "dompet-notif-android/".
+#   3. Buka tab Actions → workflow "Build APK" → download artifact
+#      "dompetnotif-debug" → install APK-nya di HP.
+#
+# APK debug sudah di-sign dengan debug key, jadi langsung bisa diinstall
+# (aktifkan "Install unknown apps" untuk browser/file manager).
+
+name: Build APK
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cari direktori proyek (root atau subdir)
+        id: proj
+        run: |
+          if [ -f gradlew ]; then
+            echo "dir=." >> "$GITHUB_OUTPUT"
+          elif [ -f dompet-notif-android/gradlew ]; then
+            echo "dir=dompet-notif-android" >> "$GITHUB_OUTPUT"
+          else
+            echo "Gradle wrapper (gradlew) tidak ditemukan." >&2
+            exit 1
+          fi
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build debug APK
+        working-directory: ${{ steps.proj.outputs.dir }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: dompetnotif-debug
+          path: ${{ steps.proj.outputs.dir }}/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

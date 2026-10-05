@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tema dasar untuk Activity; UI utama digambar dengan Jetpack Compose -->
+    <style name="Theme.DompetNotif" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/white</item>
+    </style>
+</resources>

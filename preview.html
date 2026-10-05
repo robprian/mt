@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DompetNotif — Preview Desain UI</title>
+<style>
+  :root{
+    --primary:#0288D1; --on-primary:#fff;
+    --primary-container:#D9ECFF; --on-primary-container:#001D35;
+    --error:#BA1A1A; --error-container:#FFDAD6;
+    --tertiary:#6A5ACD;
+    --surface:#FFFFFF; --bg:#F4F6F8; --on-surface:#1A1C1E; --on-variant:#5A5E63;
+    --radius:18px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0; min-height:100vh; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 20% -10%, #d9ecff 0%, transparent 60%),
+               radial-gradient(1000px 500px at 110% 110%, #cde7d8 0%, transparent 55%),
+               #101418;
+    color:#E8EAED; display:flex; flex-direction:column; align-items:center; padding:32px 16px 48px;
+  }
+  header{text-align:center; max-width:640px; margin-bottom:24px;}
+  header h1{margin:0 0 8px; font-size:28px; letter-spacing:.3px;}
+  header h1 .blue{color:#4FC3F7;}
+  header p{margin:4px 0; color:#AEB6BE; font-size:14px; line-height:1.6;}
+  header .hint{display:inline-block; margin-top:10px; font-size:12px; background:#1d2530;
+    border:1px solid #2c3947; padding:6px 14px; border-radius:999px; color:#9fd8ff;}
+  /* ===== Phone frame ===== */
+  .phone{
+    width:392px; height:852px; background:#000; border-radius:56px; padding:13px;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 2px #2a2f36, inset 0 0 0 2px #000;
+    position:relative; flex:none;
+  }
+  .screen{
+    width:100%; height:100%; background:var(--bg); border-radius:43px; overflow:hidden;
+    position:relative; display:flex; flex-direction:column; color:var(--on-surface);
+  }
+  .notch{
+    position:absolute; top:13px; left:50%; transform:translateX(-50%);
+    width:120px; height:30px; background:#000; border-radius:20px; z-index:30;
+  }
+  .statusbar{
+    height:52px; flex:none; display:flex; align-items:flex-end; justify-content:space-between;
+    padding:0 30px 6px; font-size:14px; font-weight:600; z-index:20;
+  }
+  .statusbar .sic{display:flex; gap:6px; align-items:center; font-size:12px;}
+  .content{flex:1; overflow-y:auto; position:relative; scrollbar-width:none;}
+  .content::-webkit-scrollbar{display:none;}
+  .page{display:none; padding:16px 16px 24px; animation:fade .18s ease;}
+  .page.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  /* ===== Components ===== */
+  .apptitle{font-size:24px; font-weight:800; color:var(--primary); margin:2px 0;}
+  .appsub{font-size:13px; color:var(--on-variant); margin:0 0 12px;}
+  .card{background:var(--surface); border-radius:var(--radius); padding:16px; margin-bottom:12px;
+    box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .card.green{background:#D9F2E3;}
+  .card.blue{background:var(--primary-container);}
+  .rowline{display:flex; align-items:center; gap:10px;}
+  .secttl{font-weight:700; font-size:16px; margin:14px 0 8px;}
+  .stat2{display:flex; gap:12px;}
+  .stat2 .card{flex:1;}
+  .bignum{font-size:20px; font-weight:800; margin-top:4px;}
+  .red{color:var(--error);} .tert{color:var(--tertiary);} .prim{color:var(--primary);}
+  .muted{font-size:12px; color:var(--on-variant);}
+  .kv{display:flex; justify-content:space-between; font-size:13px; padding:3px 0;}
+  .txn{display:flex; align-items:center; gap:10px; background:var(--surface); border-radius:16px;
+    padding:12px; margin-bottom:8px; box-shadow:0 1px 3px rgba(0,0,0,.08); cursor:pointer; border:none;
+    width:100%; text-align:left; font:inherit; color:inherit;}
+  .txn:active{transform:scale(.99);}
+  .avatar{width:40px; height:40px; border-radius:50%; background:var(--primary-container);
+    color:var(--on-primary-container); display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:16px; flex:none;}
+  .txn .mid{flex:1; min-width:0;}
+  .txn .mid b{display:block; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .txn .mid span{font-size:12px; color:var(--on-variant);}
+  .amt{font-weight:800; font-size:14px; white-space:nowrap;}
+  .chips{display:flex; gap:8px; margin:4px 0 12px; flex-wrap:wrap;}
+  .chip{border:1.5px solid #C9CFD6; background:#fff; border-radius:10px; padding:7px 12px;
+    font-size:12px; cursor:pointer; font-weight:600; color:#3c4043;}
+  .chip.on{background:var(--primary-container); border-color:var(--primary); color:var(--on-primary-container);}
+  .btn{background:var(--primary); color:#fff; border:none; border-radius:12px; padding:11px 18px;
+    font-size:14px; font-weight:700; cursor:pointer;}
+  .btn:active{transform:scale(.98);}
+  .btn.ghost{background:#fff; color:var(--primary); border:1.5px solid #B9D6F2;}
+  .btnrow{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;}
+  .switchrow{display:flex; align-items:center; gap:10px;}
+  .switchrow .lbl{flex:1;}
+  .sw{width:46px; height:28px; border-radius:999px; background:#C9CFD6; position:relative; cursor:pointer; transition:.2s; flex:none;}
+  .sw::after{content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%;
+    background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.3); transition:.2s;}
+  .sw.on{background:var(--primary);}
+  .sw.on::after{left:21px;}
+  .field{width:100%; border:1.5px solid #C9CFD6; border-radius:12px; padding:10px 12px; font-size:14px;
+    margin-top:6px; background:#fff; font:inherit;}
+  label.fl{font-size:12px; font-weight:600; color:var(--on-variant);}
+  /* bottom nav */
+  .navbar{flex:none; display:flex; background:var(--surface); border-top:1px solid #E4E7EB; z-index:20;}
+  .navbtn{flex:1; border:none; background:none; padding:10px 0 14px; cursor:pointer; color:#8A9099;
+    font-size:11px; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:3px; font:inherit;}
+  .navbtn .ic{font-size:20px;}
+  .navbtn.on{color:var(--primary);}
+  /* dialog */
+  .overlay{position:absolute; inset:0; background:rgba(0,0,0,.45); z-index:40; display:none;
+    align-items:center; justify-content:center; padding:24px;}
+  .overlay.show{display:flex;}
+  .dialog{background:#fff; border-radius:24px; padding:20px; width:100%; max-height:92%; overflow-y:auto;
+    scrollbar-width:none; animation:pop .18s ease;}
+  .dialog::-webkit-scrollbar{display:none;}
+  @keyframes pop{from{opacity:0; transform:scale(.96);} to{opacity:1; transform:scale(1);}}
+  .toast{position:absolute; left:50%; bottom:96px; transform:translateX(-50%); background:#222; color:#fff;
+    font-size:13px; padding:10px 18px; border-radius:999px; z-index:60; display:none; white-space:nowrap;}
+  .toast.show{display:block; animation:fade .2s;}
+  .confbar{height:6px; background:#E4E7EB; border-radius:99px; overflow:hidden; margin-top:4px;}
+  .confbar i{display:block; height:100%; background:var(--primary); border-radius:99px;}
+  footer{margin-top:26px; color:#7d8791; font-size:12px; text-align:center; max-width:640px; line-height:1.7;}
+  footer a{color:#4FC3F7;}
+  @media (max-width:460px){ .phone{width:100%; max-width:392px; height:800px;} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DompetNotif <span class="blue">— Preview Desain UI</span></h1>
+  <p>Mockup interaktif tampilan aplikasi: <b>Dasbor</b>, <b>Transaksi</b>, dan <b>Pengaturan</b>.
+     Ini preview desain (HTML) — tampilan final di HP mengikuti kode Jetpack Compose di repo.</p>
+  <span class="hint">💡 Coba: klik navigasi bawah • klik salah satu transaksi • geser chip filter • toggle switch</span>
+</header>
+
+<div class="phone">
+  <div class="screen">
+    <div class="notch"></div>
+    <div class="statusbar">
+      <span>10:11</span>
+      <span class="sic">📶 📡 🔋</span>
+    </div>
+
+    <div class="content">
+      <!-- ============ DASHBOARD ============ -->
+      <div class="page active" id="page-dashboard">
+        <div class="apptitle">DompetNotif</div>
+        <p class="appsub">Pencatat transaksi otomatis dari notifikasi m-banking &amp; e-wallet.</p>
+
+        <div class="card green">
+          <div class="rowline"><span style="font-size:20px">✅</span>
+            <b>Akses notifikasi aktif — siap menangkap transaksi.</b></div>
+        </div>
+
+        <div class="stat2">
+          <div class="card"><div class="muted">Keluar hari ini</div>
+            <div class="bignum red">Rp 698.600</div></div>
+          <div class="card"><div class="muted">Menunggu review</div>
+            <div class="bignum tert">2</div></div>
+        </div>
+
+        <div class="card">
+          <b>Pengeluaran per kategori</b>
+          <div style="margin-top:8px">
+            <div class="kv"><span>Tarik Tunai</span><b>Rp 500.000</b></div>
+            <div class="kv"><span>Top Up</span><b>Rp 100.000</b></div>
+            <div class="kv"><span>Makanan &amp; Minum</span><b>Rp 58.000</b></div>
+            <div class="kv"><span>Belanja</span><b>Rp 40.600</b></div>
+          </div>
+        </div>
+
+        <div class="secttl">Terbaru</div>
+        <div id="dash-list"></div>
+      </div>
+
+      <!-- ============ TRANSAKSI ============ -->
+      <div class="page" id="page-transaksi">
+        <div class="apptitle" style="font-size:22px">Transaksi</div>
+        <div class="chips" id="filter-chips">
+          <button class="chip on" data-f="ALL">Semua</button>
+          <button class="chip" data-f="PENDING">Menunggu</button>
+          <button class="chip" data-f="CONFIRMED">Dikonfirmasi</button>
+          <button class="chip" data-f="IGNORED">Diabaikan</button>
+        </div>
+        <div id="txn-list"></div>
+      </div>
+
+      <!-- ============ PENGATURAN ============ -->
+      <div class="page" id="page-pengaturan">
+        <div class="apptitle" style="font-size:22px">Pengaturan</div>
+
+        <div class="card">
+          <b>Aplikasi yang dipantau</b>
+          <p class="muted">Hanya notifikasi dari aplikasi ini yang dibaca.</p>
+          <b style="font-size:13px">blu, BCA mobile, DANA, GoPay</b>
+          <div class="btnrow"><button class="btn" onclick="toast('Membuka daftar aplikasi…')">Pilih aplikasi (4)</button></div>
+        </div>
+
+        <div class="card">
+          <div class="switchrow">
+            <div class="lbl"><b>Konfirmasi otomatis</b>
+              <div class="muted">Hasil parsing keyakinan ≥ 95% langsung dikonfirmasi.</div></div>
+            <div class="sw on" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <b>Sinkronisasi server (opsional)</b>
+          <p class="muted">Kirim transaksi terkonfirmasi ke server money tracker pribadimu.</p>
+          <div class="kv"><span>Status</span><b class="prim">terhubung ✓</b></div>
+          <div class="btnrow">
+            <button class="btn" onclick="toast('Membuka halaman login…')">Hubungkan</button>
+          </div>
+          <div class="switchrow" style="margin-top:10px">
+            <div class="lbl"><b style="font-size:14px">Sync otomatis saat transaksi ditangkap</b></div>
+            <div class="sw" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <b>Uji parser</b>
+          <p class="muted">Tempel judul + isi notifikasi untuk melihat hasil parsing.</p>
+          <div class="btnrow"><button class="btn ghost" onclick="openParserTest()">Buka alat uji parser</button></div>
+        </div>
+
+        <div class="card">
+          <b>Export data</b>
+          <div class="btnrow">
+            <button class="btn ghost" onclick="toast('Mengekspor CSV…')">Export CSV</button>
+            <button class="btn ghost" onclick="toast('Mengekspor JSON…')">Export JSON</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <b>Tentang</b>
+          <p class="muted" style="line-height:1.7">DompetNotif v1.0.0 — pencatat transaksi otomatis.<br>
+          • Semua data tersimpan lokal di HP.<br>
+          • Hanya MEMBACA notifikasi, tidak bisa mengakses isi aplikasi bank.<br>
+          • Butuh Android 8+ dan izin "Notification access".</p>
+        </div>
+      </div>
+
+      <!-- dialog detail transaksi -->
+      <div class="overlay" id="dlg">
+        <div class="dialog">
+          <b style="font-size:17px">Detail transaksi</b>
+          <div id="dlg-body" style="margin-top:10px"></div>
+          <div class="btnrow">
+            <button class="btn ghost" onclick="closeDlg();toast('Perubahan disimpan')">Simpan</button>
+            <button class="btn ghost" onclick="closeDlg();toast('Dikonfirmasi ✓')">Konfirmasi</button>
+          </div>
+          <div class="btnrow">
+            <button class="btn ghost" onclick="closeDlg();toast('Diabaikan')">Abaikan</button>
+            <button class="btn ghost" onclick="closeDlg();toast('Dihapus')">Hapus</button>
+          </div>
+          <div class="btnrow">
+            <button class="btn" style="flex:1" onclick="toast('Mengirim ke DompetKu…')">Sync ke DompetKu</button>
+          </div>
+          <div class="btnrow">
+            <button class="btn ghost" style="flex:1" onclick="closeDlg()">Tutup</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- dialog uji parser -->
+      <div class="overlay" id="dlg-parser">
+        <div class="dialog">
+          <b style="font-size:17px">Uji parser notifikasi</b>
+          <div style="margin-top:10px">
+            <label class="fl">Judul notifikasi</label>
+            <input class="field" id="pt-title" value="Yes, Transaksi QRIS Berhasil!">
+            <div style="height:8px"></div>
+            <label class="fl">Isi notifikasi</label>
+            <input class="field" id="pt-text" value="Transaksi di ALFA_1M4T_JLMAMPANGVI Rp 40.600 berhasil">
+            <div class="btnrow"><button class="btn" style="flex:1" onclick="runParser()">Jalankan parser</button></div>
+            <div id="pt-result" style="margin-top:10px; font-size:13px; line-height:1.8"></div>
+          </div>
+          <div class="btnrow"><button class="btn ghost" style="flex:1" onclick="document.getElementById('dlg-parser').classList.remove('show')">Tutup</button></div>
+        </div>
+      </div>
+
+      <div class="toast" id="toast"></div>
+    </div>
+
+    <nav class="navbar">
+      <button class="navbtn on" data-p="dashboard"><span class="ic">📊</span>Dasbor</button>
+      <button class="navbtn" data-p="transaksi"><span class="ic">🧾</span>Transaksi</button>
+      <button class="navbtn" data-p="pengaturan"><span class="ic">⚙️</span>Pengaturan</button>
+    </nav>
+  </div>
+</div>
+
+<footer>
+  Preview desain untuk <b>DompetNotif</b> — bagian dari goal <i>Personal Money Tracker</i>.<br>
+  File: <code>dompet-notif-android/preview.html</code> • Workflow CI: <code>.github/workflows/build-apk.yml</code>
+</footer>
+
+<script>
+const TXNS = [
+  {app:"blu", merchant:"ALFA_1M4T_JLMAMPANGVI", kind:"QRIS",       cat:"Belanja",          time:"10:07", amount:40600,   dir:"KELUAR", status:"CONFIRMED", conf:100},
+  {app:"BCA mobile", merchant:"BCA 1234567890", kind:"TRANSFER",  cat:"Transfer",         time:"09:41", amount:1500000, dir:"KELUAR", status:"PENDING",   conf:100},
+  {app:"DANA", merchant:"Dana masuk",           kind:"LAINNYA",   cat:"Pemasukan",        time:"08:15", amount:250000,  dir:"MASUK",  status:"PENDING",   conf:75},
+  {app:"GoPay", merchant:"Top up GoPay",        kind:"TOPUP",     cat:"Top Up",           time:"Kemarin", amount:100000, dir:"KELUAR", status:"CONFIRMED", conf:90},
+  {app:"BRImo", merchant:"ATM BRI GAMBIR",      kind:"TARIK_TUNAI", cat:"Tarik Tunai",    time:"Kemarin", amount:500000, dir:"KELUAR", status:"CONFIRMED", conf:100},
+  {app:"blu", merchant:"KOPI KENANGAN",         kind:"QRIS",      cat:"Makanan & Minum",  time:"Kemarin", amount:58000,  dir:"KELUAR", status:"CONFIRMED", conf:100},
+];
+const rp = n => "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const stLabel = s => s==="PENDING" ? " • perlu review" : "";
+
+function rowHtml(t){
+  const sign = t.dir==="MASUK" ? "+" : "−";
+  const cls = t.dir==="MASUK" ? "prim" : "red";
+  return `<button class="txn" onclick='openDlg(${JSON.stringify(t).replace(/'/g,"&#39;")})'>
+    <div class="avatar">${t.app[0].toUpperCase()}</div>
+    <div class="mid"><b>${t.merchant}</b><span>${t.cat} • ${t.kind} • ${t.time}${stLabel(t.status)}</span></div>
+    <div class="amt ${cls}">${sign}${rp(t.amount)}</div>
+  </button>`;
+}
+document.getElementById('dash-list').innerHTML = TXNS.map(rowHtml).join('');
+
+let curFilter = "ALL";
+function renderList(){
+  const el = document.getElementById('txn-list');
+  const list = TXNS.filter(t => curFilter==="ALL" || t.status===curFilter);
+  el.innerHTML = list.length ? list.map(rowHtml).join('')
+    : `<div class="card" style="text-align:center"><span class="muted">Tidak ada transaksi pada filter ini.</span></div>`;
+}
+renderList();
+document.querySelectorAll('#filter-chips .chip').forEach(c=>{
+  c.onclick = ()=>{
+    document.querySelectorAll('#filter-chips .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on'); curFilter = c.dataset.f; renderList();
+  };
+});
+
+// nav
+document.querySelectorAll('.navbtn').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('.navbtn').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+b.dataset.p).classList.add('active');
+    document.querySelector('.content').scrollTop = 0;
+  };
+});
+
+// dialog
+function openDlg(t){
+  document.getElementById('dlg-body').innerHTML = `
+    <div class="rowline"><div class="avatar">${t.app[0].toUpperCase()}</div>
+      <div><b>${t.app}</b><div class="muted">Hari ini • keyakinan parser ${t.conf}%</div>
+      <div class="confbar"><i style="width:${t.conf}%"></i></div></div></div>
+    <div style="height:10px"></div>
+    <label class="fl">Merchant / penerima</label>
+    <input class="field" value="${t.merchant}">
+    <div style="height:8px"></div>
+    <label class="fl">Nominal (Rp)</label>
+    <input class="field" value="${t.amount}">
+    <div style="height:8px"></div>
+    <label class="fl">Kategori (smart — koreksimu diingat)</label>
+    <input class="field" value="${t.cat}">
+    <div style="height:8px"></div>
+    <label class="fl">Catatan</label>
+    <input class="field" placeholder="opsional…">
+    <p class="muted" style="margin-top:10px">Notifikasi asli: "${t.kind} • ${rp(t.amount)}"</p>`;
+  document.getElementById('dlg').classList.add('show');
+}
+function closeDlg(){ document.getElementById('dlg').classList.remove('show'); }
+function openParserTest(){ document.getElementById('dlg-parser').classList.add('show'); }
+function runParser(){
+  const ti = document.getElementById('pt-title').value, tx = document.getElementById('pt-text').value;
+  const m = tx.match(/Rp\.?\s*([\d.]+(?:,\d{1,2})?)/i);
+  const el = document.getElementById('pt-result');
+  if(!m){ el.innerHTML = "⛔ Bukan notifikasi transaksi (tidak ada nominal) — akan diabaikan."; return; }
+  const amt = parseInt(m[1].replace(/\./g,'').split(',')[0], 10);
+  const mm = tx.match(/\b[Dd]i\s+([A-Za-z0-9][A-Za-z0-9_\-. ,]{1,42}?)(?=\s+(?:[Rr][Pp]\b|berhasil\b|sukses\b|telah\b)|\s*$)/);
+  el.innerHTML = `✓ Nominal: <b>${rp(amt)}</b><br>✓ Merchant: <b>${mm?mm[1].trim():"(tidak terdeteksi)"}</b><br>✓ Jenis: <b>${/qris/i.test(ti+tx)?"QRIS":"LAINNYA"}</b><br>✓ Arah: <b>KELUAR</b><br>✓ Keyakinan: <b>100%</b>`;
+}
+let toastT;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(()=>el.classList.remove('show'), 1800);
+}
+document.getElementById('dlg').addEventListener('click', e=>{
+  if(e.target.id==='dlg') closeDlg();
+});
+document.getElementById('dlg-parser').addEventListener('click', e=>{
+  if(e.target.id==='dlg-parser') e.target.classList.remove('show');
+});
+</script>
+</body>
+</html>
